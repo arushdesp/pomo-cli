@@ -1,84 +1,114 @@
-Pomodoro CLI App
-Description
-This is a simple command-line interface (CLI) application to help you practice the Pomodoro productivity technique. It allows you to start a timed work session for a specific task and saves a record of your work. The app can run in the background and will provide a final status message upon completion.
+# Pomo CLI
 
-Requirements & Installation
-This application is written in Go, which provides a simple and portable executable.
+A simple command-line Pomodoro timer.
 
-Install Go: You must have Go installed on your system. You can download and install it from the official website. Below are simple steps for different operating systems.
+## Description
 
-For Windows:
+This is a CLI tool to help you manage your time using the Pomodoro Technique. You can start timers for specific tasks, view your task history, and stop running timers.
 
-Download the .msi installer.
+## Installation
 
-Double-click the installer and follow the prompts. The installer will automatically set up the necessary environment variables.
+To use this tool, you need to have [Go](https://golang.org/doc/install) installed on your system.
 
-For macOS:
+1.  **Clone or download the repository:**
+    ```bash
+    git clone https://github.com/arushdesp/pomo-cli
+    cd pomo-cli
+    ```
 
-Download the .pkg installer.
+2.  **Build the executable:**
+    ```bash
+    go build -o pomo-cli pomo-cli.go
+    ```
+    This will create an executable file named `pomo-cli` for your current OS.
 
-Double-click the installer and follow the prompts. The installer will place the Go binaries in /usr/local/go and set up your $PATH.
+    To specifically create a Windows executable (`.exe`) from a non-Windows OS, use the following command:
+    ```bash
+    GOOS=windows GOARCH=amd64 go build -o pomo-cli.exe
+    ```
 
-For Linux:
+### Adding to PATH for Easy Usage
 
-Download the .tar.gz archive.
+To use `pomo-cli` from any directory, you should move the executable to a directory that is in your system's PATH.
 
-Extract the archive to /usr/local with a command like sudo tar -C /usr/local -xzf go<version>.<os>-<arch>.tar.gz.
+#### macOS and Linux
 
-Add the Go binary path to your $PATH environment variable by adding export PATH=$PATH:/usr/local/go/bin to your ~/.profile or ~/.bashrc file and then restarting your terminal.
+1.  **Move the executable:**
+    ```bash
+    sudo mv pomo-cli /usr/local/bin/
+    ```
+    This moves the executable to a common directory for user-installed executables.
 
-Initialize the project: In the directory with pomodoro.go, run these commands once to set up the project and download the database driver.
+2.  **Make it executable:**
+    ```bash
+    sudo chmod +x /usr/local/bin/pomo-cli
+    ```
 
-go mod init pomodoro
-go mod tidy
+Now you can run the tool by simply typing `pomo-cli` in your terminal.
 
-Usage
-Run the script with the executable created by go build, followed by one of the available commands.
+#### Windows TO CHECK 
 
-Build the Executable:
-You only need to do this once, or whenever you change the code.
+1.  **Create a directory for your executables (optional):**
+    It's good practice to have a dedicated directory for your command-line tools, for example, `C:\bin`.
 
-go build pomodoro.go
+2.  **Move the executable:**
+    Move the `pomo-cli.exe` file to your chosen directory (e.g., `C:\bin`).
 
-This will create an executable named pomodoro in the same directory. To match your naming preference, you can rename it.
+3.  **Add the directory to your PATH:**
+    *   Press `Win + S` and search for "Edit the system environment variables".
+    *   Click on the "Environment Variables..." button.
+    *   In the "System variables" section, find and select the `Path` variable, then click "Edit...".
+    *   Click "New" and add the path to your directory (e.g., `C:\bin`).
+    *   Click "OK" on all windows to save the changes.
 
-mv pomodoro pomo-cli
+    You may need to restart your terminal for the changes to take effect. After that, you can run the tool by typing `pomo-cli` in your command prompt or PowerShell.
 
-Installation (Making it a System Command)
-To use pomo-cli from any directory, you need to place the executable in a directory that is part of your system's $PATH.
 
-Move the pomo-cli executable to a common binaries directory, like /usr/local/bin/.
+## Usage
 
-sudo mv pomo-cli /usr/local/bin/
+The following commands are available:
 
-You may be prompted for your password to complete this command.
+### `start`
 
-Restart your terminal for the changes to take effect. You can now use pomo-cli from anywhere.
+Starts a new Pomodoro timer.
 
-1. Start a New Pomodoro Session
-Use the start command to begin a new timer.
+**Flags:**
 
---task <task_name> (required): The name of the task you are working on.
+*   `--task`: (Required) The name of the task you are working on.
+*   `--time`: The duration of the Pomodoro session in minutes. Defaults to 25.
+*   `--background`: Run the timer silently in the background.
 
---time <minutes> (optional): The duration of the session in minutes. Defaults to 25.
+**Example:**
 
---background (optional): Use this flag to run the timer silently in the background.
+```bash
+pomo-cli start --task "Write documentation" --time 30
+```
 
-Interactive Mode (with output):
+To run in the background:
+```bash
+pomo-cli start --task "Code review" --background
+```
 
-pomo-cli start --task "Write project documentation" --time 25
+### `view`
 
-Background Mode (the simple way):
-This is the ideal way to use the app for long sessions. The application will immediately run the timer in the background, and the "Good job!" message will appear in your terminal when it's done.
+Displays the history of completed Pomodoro sessions.
 
-pomo-cli start --task "Focus on debugging" --time 50 --background
+**Example:**
 
-Your terminal prompt will return immediately, allowing you to continue working. The timer will run, and the final message will appear when it's finished.
-
-2. View Task History
-Use the view command to see all your completed Pomodoro sessions saved in the database.
-
+```bash
 pomo-cli view
+```
 
-Database
-The application automatically creates a file named pomodoro.db in the same directory where you run your command to store all your completed tasks. This database file is a simple SQLite database and does not require any additional setup.
+### `stop`
+
+Stops a Pomodoro timer that is running in the background.
+
+**Example:**
+
+```bash
+pomo-cli stop
+```
+
+## License
+
+This project is licensed under the terms of the LICENSE file.
