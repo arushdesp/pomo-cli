@@ -1,6 +1,7 @@
-# Pomo CLI
+# 🍅 Pomo CLI
 
-A simple command-line Pomodoro timer.
+A simple command-line Pomodoro timer. 
+
 
 ## Description
 
@@ -46,8 +47,7 @@ To use `pomo-cli` from any directory, you should move the executable to a direct
 
 Now you can run the tool by simply typing `pomo-cli` in your terminal.
 
-#### Windows TO CHECK 
-
+### Windows TO CHECK after making the .exe ( TO-DO )
 
 ## Usage
 
@@ -93,6 +93,15 @@ Stops a Pomodoro timer that is running in the background.
 ```bash
 pomo-cli stop
 ```
+
+### `stats`
+```bash
+pomo-cli stats
+```
+
+Have a suggestion, question, or found a bug?  
+👉 [Open an Issue](https://github.com/arushdesp/pomo-cli/issues)
+
 
 ## License
 
