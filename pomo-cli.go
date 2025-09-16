@@ -167,6 +167,61 @@ func viewTasks() {
 	}
 }
 
+// --- Statistics Logic ---
+func displayStats() {
+	db := initDB()
+	defer db.Close()
+
+	fmt.Println("\n--- Pomodoro Statistics ---")
+
+	// Total sessions completed
+	var totalSessions int
+	err := db.QueryRow("SELECT COUNT(*) FROM tasks").Scan(&totalSessions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Total Pomodoro Sessions: %d\n", totalSessions)
+
+	// Total time spent on tasks
+	var totalDurationMinutes int
+	err = db.QueryRow("SELECT SUM(duration_minutes) FROM tasks").Scan(&totalDurationMinutes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Total Time Spent: %d minutes\n", totalDurationMinutes)
+
+	// Average session duration
+	var avgDuration float64
+	err = db.QueryRow("SELECT AVG(duration_minutes) FROM tasks").Scan(&avgDuration)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Average Session Duration: %.2f minutes\n", avgDuration)
+
+	// Most frequent tasks
+	fmt.Println("\nMost Frequent Tasks:")
+	rows, err := db.Query("SELECT task_name, COUNT(*) AS count FROM tasks GROUP BY task_name ORDER BY count DESC LIMIT 5")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	foundFrequentTasks := false
+	for rows.Next() {
+		var taskName string
+		var count int
+		err := rows.Scan(&taskName, &count)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("- '%s': %d sessions\n", taskName, count)
+		foundFrequentTasks = true
+	}
+	if !foundFrequentTasks {
+		fmt.Println("No tasks recorded yet.")
+	}
+}
+
+
 // --- Main Function ---
 func main() {
 	// Define command-line flags
@@ -180,9 +235,10 @@ func main() {
 
 	viewCmd := flag.NewFlagSet("view", flag.ExitOnError)
 	stopCmd := flag.NewFlagSet("stop", flag.ExitOnError)
+	statsCmd := flag.NewFlagSet("stats", flag.ExitOnError)
 
 	if len(os.Args) < 2 {
-		fmt.Println("Please provide a command: 'start', 'view', or 'stop'")
+		fmt.Println("Please provide a command: 'start', 'view', 'stop', or 'stats'")
 		os.Exit(1)
 	}
 
@@ -228,6 +284,7 @@ func main() {
 
 		// This is the interactive or background child process
 		runTimer(*task, *timer)
+	
 
 	case "view":
 		viewCmd.Parse(os.Args[2:])
@@ -235,8 +292,13 @@ func main() {
 	case "stop":
 		stopCmd.Parse(os.Args[2:])
 		stopTimer()
+	case "stats":
+		statsCmd.Parse(os.Args[2:])
+		displayStats()
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
 		os.Exit(1)
 	}
 }
+
+
