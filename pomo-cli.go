@@ -17,11 +17,29 @@ import (
 )
 
 // --- Database and PID Setup ---
-const dbFile = "pomodoro.db"
-const pidFile = "pomo-cli.pid"
+const dbFileName = "pomodoro.db"
+const pidFileName = "pomo-cli.pid"
+
+// getAppDir returns the path to the application's data directory, creating it if it doesn't exist.
+func getAppDir() string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatalf("Error getting user home directory: %v", err)
+	}
+	appDir := fmt.Sprintf("%s/.pomo-cli", homeDir)
+	if _, err := os.Stat(appDir); os.IsNotExist(err) {
+		err = os.Mkdir(appDir, 0755)
+		if err != nil {
+			log.Fatalf("Error creating application directory: %v", err)
+		}
+	}
+	return appDir
+}
 
 func initDB() *sql.DB {
-	db, err := sql.Open("sqlite3", dbFile)
+	appDir := getAppDir()
+	dbPath := fmt.Sprintf("%s/%s", appDir, dbFileName)
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -82,7 +100,9 @@ func runTimer(taskName string, duration int) {
 
 // --- Stop Timer Logic ---
 func stopTimer() {
-	pidBytes, err := os.ReadFile(pidFile)
+	appDir := getAppDir()
+	pidPath := fmt.Sprintf("%s/%s", appDir, pidFileName)
+	pidBytes, err := os.ReadFile(pidPath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			fmt.Println("No active Pomodoro timer found in the background.")
@@ -97,7 +117,7 @@ func stopTimer() {
 	}
 
 	// Remove the PID file immediately to prevent race conditions
-	os.Remove(pidFile)
+	os.Remove(pidPath)
 
 	proc, err := os.FindProcess(pid)
 	if err != nil {
@@ -194,7 +214,9 @@ func main() {
 			
 			// Save the child process ID and exit immediately
 			pid := cmd.Process.Pid
-			err = os.WriteFile(pidFile, []byte(strconv.Itoa(pid)), 0644)
+			appDir := getAppDir()
+			pidPath := fmt.Sprintf("%s/%s", appDir, pidFileName)
+			err = os.WriteFile(pidPath, []byte(strconv.Itoa(pid)), 0644)
 			if err != nil {
 				log.Printf("Warning: Could not save PID file: %v\n", err)
 			}

@@ -48,21 +48,6 @@ Now you can run the tool by simply typing `pomo-cli` in your terminal.
 
 #### Windows TO CHECK 
 
-1.  **Create a directory for your executables (optional):**
-    It's good practice to have a dedicated directory for your command-line tools, for example, `C:\bin`.
-
-2.  **Move the executable:**
-    Move the `pomo-cli.exe` file to your chosen directory (e.g., `C:\bin`).
-
-3.  **Add the directory to your PATH:**
-    *   Press `Win + S` and search for "Edit the system environment variables".
-    *   Click on the "Environment Variables..." button.
-    *   In the "System variables" section, find and select the `Path` variable, then click "Edit...".
-    *   Click "New" and add the path to your directory (e.g., `C:\bin`).
-    *   Click "OK" on all windows to save the changes.
-
-    You may need to restart your terminal for the changes to take effect. After that, you can run the tool by typing `pomo-cli` in your command prompt or PowerShell.
-
 
 ## Usage
 
